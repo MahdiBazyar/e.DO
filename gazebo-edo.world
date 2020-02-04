@@ -1,0 +1,739 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+  <world name="edo_world">
+    <physics type="ode">
+      <real_time_update_rate>0.000</real_time_update_rate>
+      <max_step_size>0.001</max_step_size>
+    </physics><!--COMMENT OUT FOR HP LINUX PC-->
+
+	  <light name='sun' type='directional'>
+		  <cast_shadows>1</cast_shadows>
+		  <pose>0 0 10 0 -0 0</pose>
+		  <diffuse>0.8 0.8 0.8 1</diffuse>
+		  <specular>0.2 0.2 0.2 1</specular>
+		  <attenuation>
+			  <range>1000</range>
+			  <constant>0.9</constant>
+			  <linear>0.01</linear>
+			  <quadratic>0.001</quadratic>
+		  </attenuation>
+		  <direction>-0.5 0.1 -0.9</direction>
+	  </light>
+
+    <scene>
+      <background>155 155 155 1</background>
+      <shadows>false</shadows>
+    </scene>
+
+    <!--<physics>false</physics>-->
+
+	  <!-- Ground Plane -->
+	  <include>
+		  <uri>model://ground_plane</uri>
+	  </include>
+
+
+	  <!--             -->
+	  <!-- EDO/GRIPPER -->
+	  <!--             -->
+	  <model name="edo_sim">
+      <plugin name="EdoPlugin" filename="libgazeboEdoPlugin.so" />
+      <self_collide>false</self_collide>
+
+		  <link name="base_link">
+		    <pose>0 0 .0675 0 0 0</pose>
+		    <inertial>
+			    <mass>5.7</mass>
+		    </inertial>
+		    <collision name="collision">
+			    <geometry>
+				    <cylinder>
+					    <radius>0.2613</radius>
+              <length>0.135</length>
+				    </cylinder>
+			    </geometry>
+		    </collision>
+		    <visual name="visual">
+			    <geometry>
+				    <cylinder>
+					    <radius>0.2613</radius>
+              <length>0.135</length>
+				    </cylinder>
+			    </geometry>
+		    </visual>
+		  </link>
+
+		  <joint name="base_link" type="fixed">
+			  <child>base_link</child>
+			  <parent>world</parent>
+		  </joint>
+
+		  <link name="joint_1">
+		    <pose>0 0 0.236 0 0 0</pose>
+        <inertial>
+			<mass>0.88</mass>
+		    </inertial>
+		    <collision name="collision">
+			    <geometry>
+				<cylinder>
+					<radius>.0425</radius>
+					<length>.202</length>
+				    </cylinder>
+			    </geometry>
+		</collision>
+		    <visual name="visual">
+			<geometry>
+				<cylinder>
+					<radius>.0425</radius>
+					<length>.202</length>
+				</cylinder>
+			</geometry>
+		</visual>
+		  </link>
+
+		  <joint name="joint_1" type="fixed"><!--Adel Change type from revolute to fixed-->
+			  <child>joint_1</child>
+			  <parent>base_link</parent>
+			  <axis>
+				  <limit>
+					  <lower>-2</lower>
+					  <upper>2</upper>
+				  </limit>
+				  <xyz>0 0 1</xyz>
+			  </axis>
+		  </joint>
+
+		  <link name="joint_2">
+		    <pose>0 0 0.337 1.5708 0 0</pose>
+        <inertial>
+			    <mass>0.88</mass>
+		    </inertial>
+		    <collision name="collision">
+			    <geometry>
+				    <cylinder>
+					    <radius>.0425</radius>
+					    <length>.1</length>
+				    </cylinder>
+			    </geometry>
+		    </collision>
+		    <visual name="visual">
+			    <geometry>
+				    <cylinder>
+					    <radius>.0425</radius>
+					    <length>.1</length>
+				    </cylinder>
+			    </geometry>
+		    </visual>
+		  </link>
+
+		  <joint name="joint_2" type="revolute">
+			  <child>joint_2</child>
+			  <parent>joint_1</parent>
+			  <axis>
+				  <limit>
+					  <lower>-2</lower>
+					  <upper>2</upper>
+				  </limit>
+				  <xyz>0 1 0</xyz>
+			  </axis>
+		  </joint>
+
+      <link name="link_1">
+		    <pose>0 0 0.44225 0 0 0</pose>
+		    <collision name="collision">
+			    <geometry>
+				    <cylinder>
+					    <radius>.0425</radius>
+					    <length>.2105</length>
+				    </cylinder>
+			    </geometry>
+		    </collision>
+		    <visual name="visual">
+			    <geometry>
+				    <cylinder>
+					    <radius>.0425</radius>
+					    <length>.2105</length>
+				    </cylinder>
+			    </geometry>
+		    </visual>
+		  </link>
+
+		  <joint name="link_1" type="fixed">
+			  <child>link_1</child>
+			  <parent>joint_2</parent>
+		  </joint>
+
+		  <link name="joint_3">
+		    <pose>0 0 0.5475 1.5708 0 0</pose>
+        <inertial>
+			    <mass>0.88</mass>
+		    </inertial>
+		    <collision name="collision">
+			    <geometry>
+				    <cylinder>
+					    <radius>.0425</radius>
+					    <length>.1</length>
+				    </cylinder>
+			    </geometry>
+		    </collision>
+		    <visual name="visual">
+			    <geometry>
+				    <cylinder>
+					    <radius>.0425</radius>
+					    <length>.1</length>
+				    </cylinder>
+			    </geometry>
+		    </visual>
+		  </link>
+
+		  <joint name="joint_3" type="revolute">
+			  <child>joint_3</child>
+			  <parent>link_1</parent>
+			  <axis>
+				  <limit>
+					  <lower>-2</lower>
+					  <upper>2</upper>
+				  </limit>
+				  <xyz>0 1 0</xyz>
+			  </axis>
+		  </joint>
+
+		  <link name="joint_4">
+		    <pose>0 0 0.6815 0 0 0</pose>
+        <inertial>
+			    <mass>0.42</mass>
+		    </inertial>
+		    <collision name="collision">
+			    <geometry>
+				    <cylinder>
+					    <radius>.035</radius>
+					    <length>.268</length>
+				    </cylinder>
+			    </geometry>
+		    </collision>
+		    <visual name="visual">
+			    <geometry>
+				    <cylinder>
+					    <radius>.035</radius>
+					    <length>.268</length>
+				    </cylinder>
+			    </geometry>
+		    </visual>
+		  </link>
+
+		  <joint name="joint_4" type="fixed"> <!--Adel Change type from revolute to fixed-->
+			  <child>joint_4</child>
+			  <parent>joint_3</parent>
+			  <axis>
+				  <limit>
+					  <lower>-2</lower>
+					  <upper>2</upper>
+				  </limit>
+				  <xyz>0 0 1</xyz>
+			  </axis>
+		  </joint>
+
+      <link name="joint_5">
+		    <pose>0 0 0.8155 1.5708 0 0</pose>
+        <inertial>
+			    <mass>0.42</mass>
+		    </inertial>
+		    <collision name="collision">
+			    <geometry>
+				    <cylinder>
+					    <radius>.035</radius>
+					    <length>.1</length>
+				    </cylinder>
+			    </geometry>
+		    </collision>
+		    <visual name="visual">
+			    <geometry>
+				    <cylinder>
+					    <radius>.035</radius>
+					    <length>.1</length>
+				    </cylinder>
+			    </geometry>
+		    </visual>
+		  </link>
+
+		  <joint name="joint_5" type="revolute">
+			  <child>joint_5</child>
+			  <parent>joint_4</parent>
+			  <axis>
+				  <limit>
+					  <lower>-2</lower>
+					  <upper>2</upper>
+				  </limit>
+				  <xyz>0 1 0</xyz>
+			  </axis>
+		  </joint>
+
+      <link name="joint_6">
+		    <pose>0 0 0.90275 0 0 0</pose>
+        <inertial>
+			    <mass>0.42</mass>
+		    </inertial>
+		    <collision name="collision">
+			    <geometry>
+				    <cylinder>
+					    <radius>.035</radius>
+					    <length>.1745</length>
+				    </cylinder>
+			    </geometry>
+		    </collision>
+		    <visual name="visual">
+			    <geometry>
+				    <cylinder>
+					    <radius>.035</radius>
+					    <length>.1745</length>
+				    </cylinder>
+			    </geometry>
+		    </visual>
+		  </link>
+
+		  <joint name="joint_6" type="fixed"> <!--Adel Change type from revolute to fixed-->
+			  <child>joint_6</child>
+			  <parent>joint_5</parent>
+			  <axis>
+				  <limit>
+					  <lower>-2</lower>
+					  <upper>2</upper>
+				  </limit>
+				  <xyz>0 0 1</xyz>
+			  </axis>
+		  </joint>
+<!--OLD GRIPPER MIDDLE-->
+<!--      <link name="gripper_middle">
+			  <pose>0 0 1.05 0 0 0</pose>
+			  <collision name="middle_collision">
+			    <geometry>
+				    <box>
+				    	<size>.01 .01 .12</size>
+				    </box>
+			    </geometry>
+			  </collision>
+			  <visual name="middle_vision">
+				  <geometry>
+					  <box>
+						  <size>.01 .01 .12</size>
+					  </box>
+				  </geometry>
+          <material>
+            <ambient>1 0 0 1</ambient>
+            <diffuse>1 0 0 1</diffuse>
+            <specular>0.1 0.1 0.1 1</specular>
+            <emissive>0 0 0 0</emissive>
+          </material>
+			  </visual>
+		  </link>
+
+      <joint name="gripper_middle" type="fixed">
+        <parent>joint_6</parent>
+        <child>gripper_middle</child>
+      </joint>
+-->
+<!--OLD GRIPPER MIDDLE-->
+<!--NEW GRIPPER MIDDLE-->
+      <link name="gripper_prong">
+        <pose>0 0 1.03 0 0 0</pose>
+			  <collision name="prong_collision">
+			    <geometry>
+				    <box>
+              <size>.01 .01 .075</size>
+				    </box>
+			    </geometry>
+			  </collision>
+			  <visual name="prong_vision">
+				  <geometry>
+					  <box>
+              <size>.01 .01 .075</size>
+					  </box>
+				  </geometry>
+			  </visual>
+		  </link>
+
+      <joint name="gripper_prong" type="fixed">
+        <parent>joint_6</parent>
+        <child>gripper_prong</child>
+      </joint>
+
+      <link name="gripper_middle">
+        <pose>0 0 1.077 0 0 0</pose>
+			  <collision name="middle_collision">
+			    <geometry>
+				    <box>
+				      <size>.01 .01 .02</size>
+				    </box>
+			    </geometry>
+			  </collision>
+			  <visual name="middle_vision">
+				  <geometry>
+					  <box>
+				      <size>.01 .01 .02</size>
+					  </box>
+				  </geometry>
+					<!--COMMENTED OUT**<material>
+					  <ambient>1 0 0 1</ambient>
+					  <diffuse>1 0 0 1</diffuse>
+					  <specular>0.1 0.1 0.1 1</specular>
+					  <emissive>0 0 0 0</emissive>
+					</material>RED**COMMENTED OUT-->
+			    <material>
+				    <ambient>0.5 0.5 0.5 1</ambient>
+				    <diffuse>0.01 0.5 0.5 1</diffuse>
+				    <specular>0.01 0.01 0.01 1</specular>
+				    <emissive>0.1 0.1 0 0</emissive>
+				    <shader type='vertex'>
+					    <normal_map>__default__</normal_map>
+				    </shader>
+			    </material><!--COMMENTED OUT**GREEN**COMMENTED OUT-->
+			  </visual>
+		  </link>
+
+      <joint name="gripper_middle" type="fixed">
+        <parent>gripper_prong</parent>
+        <child>gripper_middle</child>
+      </joint>
+<!--NEW GRIPPER MIDDLE-->
+
+      <!--  <link name="gripper_end">
+			  <pose>0 0 1.11 0 0 0</pose>
+			  <collision name="end_collision">
+			    <geometry>
+				    <box>
+					<size>.01 .01 .01</size>
+				    </box>
+			    </geometry>
+			  </collision>
+			  <visual name="end_vision">
+				  <geometry>
+					  <box>
+						  <size>.01 .01 .01</size>
+					  </box>
+				  </geometry>
+          <material>
+            <ambient>0.5 0.5 0.5 1</ambient>
+				    <diffuse>0.01 0.5 0.5 1</diffuse>
+				    <specular>0.01 0.01 0.01 1</specular>
+				    <emissive>0.1 0.1 0 0</emissive>
+          </material>
+			  </visual>
+		  </link>
+
+      <joint name="gripper_end" type="fixed">
+        <parent>gripper_middle</parent>
+        <child>gripper_end</child>
+      </joint>-->
+
+	  </model>
+
+    
+	  <!--        -->
+	  <!-- CAMERA -->
+	  <!--        -->
+	  <model name="camera">
+		  <link name="link">
+		  <gravity>false</gravity>
+		  <!--<pose>-1.0 -3.0 0.85 0 0 1.0</pose>-->
+		  <!--<pose>0.75 -3.0 0.85 0 0 1.5</pose>-->
+		  <!--<pose>0.0 0.0 3.5 0 1.57079632679 0</pose>-->
+      <!--<pose>0.2 -1.25 0.50 0 0 1.57</pose>-->
+      <!--<pose>0.2 -1.28 0.95 0 0.35 1.57</pose>-->
+      <!--<pose>-1.25 1.75 -0.3 0 0 -0.2</pose>-->
+      <!--<pose>0.05 -1.5 0.7 0.0 0.05 1.5708</pose> ***normal pose***-->
+      <pose>0.3 -12 0.575 0 0 1.5708</pose> <!--***profile pose***-->
+      <!--<pose>0.2 -0.95 1.5 0.0 0.785398 1.5708</pose> ***45deg pose***-->
+		  <inertial>
+			  <mass>0.1</mass>
+      </inertial>
+      <!-- VISUAL ELIMINATED by Jack Shelata
+           camera box shows up in double image-->
+		  <visual name="visual">
+			  <geometry>
+				  <box>
+					  <size>0.1 0.1 0.1</size>
+				  </box>
+			  </geometry>
+      </visual>
+		  <sensor name="camera" type="camera">
+			  <camera>
+          <!--<horizontal_fov>1.047</horizontal_fov> ***normal fov***-->
+          <horizontal_fov>0.1</horizontal_fov> <!--***profile fov*** -->
+				  <image>
+					  <width>128</width> <!--Adel mohamed changed from 64 to 128 -->
+					  <height>128</height> <!--Adel mohamed changed from 64 to 128 -->
+				  </image>
+				  <clip>
+					  <near>0.1</near>
+					  <far>100</far>
+          </clip>
+				  <!--<noise>
+					  <type>gaussian</type>
+					  <mean>0.0</mean>
+					  <stddev>0.007</stddev>
+				  </noise>-->
+			  </camera>
+			  <always_on>1</always_on>
+			  <update_rate>20</update_rate>
+			  <visualize>false</visualize>
+		  </sensor>
+		  </link>
+	  </model>
+
+	  <!--        -->
+	  <!-- Adel second CAMERA for the other 2d -->
+	  <!--        -->
+	  <model name="cameraSecond">
+		  <link name="link">
+		  <gravity>false</gravity>
+		  <!--<pose>-1.0 -3.0 0.85 0 0 1.0</pose>-->
+		  <!--<pose>0.75 -3.0 0.85 0 0 1.5</pose>-->
+		  <!--<pose>0.0 0.0 3.5 0 1.57079632679 0</pose>-->
+      <!--<pose>0.2 -1.25 0.50 0 0 1.57</pose>-->
+      <!--<pose>0.2 -1.28 0.95 0 0.35 1.57</pose>-->
+      <!--<pose>-1.25 1.75 -0.3 0 0 -0.2</pose>-->
+      <!--<pose>0.05 -1.5 0.7 0.0 0.05 1.5708</pose> ***normal pose***-->
+      <pose>0.3 0 17 0 1.5708 1.5708</pose> <!--***profile pose***-->
+      <!--<pose>0.2 -0.95 1.5 0.0 0.785398 1.5708</pose> ***45deg pose***-->
+		  <inertial>
+			  <mass>0.1</mass>
+      </inertial>
+      <!-- VISUAL ELIMINATED by Jack Shelata
+           camera box shows up in double image-->
+		  <visual name="visual">
+			  <geometry>
+				  <box>
+					  <size>0.1 0.1 0.1</size>
+				  </box>
+			  </geometry>
+      </visual>
+		  <sensor name="camera" type="camera">
+			  <camera>
+          <!--<horizontal_fov>1.047</horizontal_fov> ***normal fov***-->
+          <horizontal_fov>0.1</horizontal_fov> <!--***profile fov*** -->
+				  <image>
+					  <width>128</width> <!--Adel mohamed changed from 64 to 128 -->
+					  <height>128</height><!--Adel mohamed changed from 64 to 128 -->
+				  </image>
+				  <clip>
+					  <near>0.1</near>
+					  <far>100</far>
+          </clip>
+				  <!--<noise>
+					  <type>gaussian</type>
+					  <mean>0.0</mean>
+					  <stddev>0.007</stddev>
+				  </noise>-->
+			  </camera>
+			  <always_on>1</always_on>
+			  <update_rate>20</update_rate>
+			  <visualize>false</visualize>
+		  </sensor>
+		  </link>
+	  </model>    
+
+    <model name="multicamera">
+      <pose>0 0 0 0 0 0</pose>
+      <static>true</static>
+      <link name="link">
+        <pose>0 0 0 0 0 0</pose>
+        <sensor type="multicamera" name="multicamera">
+			    <camera name="left">
+            <!--<horizontal_fov>1.047</horizontal_fov>-->
+            <!--<pose>0.3 -13 0.53 0 0 1.5708</pose> -->
+            <!-- changed from 128 to 64 by Adel Mohamed don't change without contacting me-->
+            <pose>0.3 0 17 0 1.5708 1.5708</pose>
+            <horizontal_fov>0.1</horizontal_fov>
+            <!-- changed from 0.17 to 0.1 by Adel Mohamed don't change without contacting me-->
+				    <image>
+					    <width>128</width><!-- changed from 64 to 128 by Adel Mohamed don't change without contacting me-->
+					    <height>128</height>
+				    </image>
+				    <clip>
+					    <near>0.1</near>
+					    <far>100</far>
+				    </clip>
+			    </camera>
+          <always_on>1</always_on>
+			    <update_rate>20</update_rate> <!-- FROM 10 TO 20-->
+          <camera name="right">
+              <!--<horizontal_fov>1.047</horizontal_fov>-->
+             <pose>0.3 -12 0.575 0 0 1.5708</pose>
+              <horizontal_fov>0.1</horizontal_fov>
+              <!-- changed from 0.14 to 0.1 by Adel Mohamed don't change without contacting me-->
+				      <image>
+					      <width>128</width><!-- changed from 64 to 128 by Adel Mohamed don't change without contacting me-->
+					      <height>128</height>
+				      </image>
+				      <clip>
+					      <near>0.1</near>
+					      <far>100</far>
+				      </clip>
+			    </camera>
+          <always_on>1</always_on>
+			    <update_rate>20</update_rate> <!-- FROM 10 TO 20-->
+			    <visualize>false</visualize>
+          <plugin name="MultiCamera" filename="libgazebo_ros_multicamera.so"/>
+        </sensor>
+      </link>
+    </model>
+
+	  <!--               -->
+	  <!-- BOX/COLLISION -->
+	  <!--               -->
+	  <!--<model name="box">
+		  <link name="link">
+		  <pose>0.75 0.75 0 0 0 0</pose>
+
+		  <collision name="box_collision">
+			  <geometry>
+				  <box>
+					  <size>0.10 0.10 0.10</size>
+				  </box>
+			  </geometry>
+		  </collision>
+
+		  <visual name="visual">
+			  <geometry>
+				  <box>
+					  <size>0.10 0.10 0.10</size>
+				  </box>
+			  </geometry>
+			  <material>
+				  <ambient>0.3 0.3 0.3 1</ambient>
+				  <diffuse>1.0 0.5 0.0 1</diffuse>
+				  <specular>0.01 0.01 0.01 1</specular>
+				  <emissive>0 0 0 1</emissive>
+				  <shader type='vertex'>
+					  <normal_map>__default__</normal_map>
+				  </shader>
+			  </material>
+		  </visual>
+
+		  <sensor name='my_contact' type='contact'>
+			  <contact>
+				  <collision>box_collision</collision>
+			  </contact>
+		  </sensor>
+		  </link>
+		  <plugin name="PropPlugin" filename="libgazeboPropPlugin.so" />
+
+	  </model>-->
+
+
+	  <!--               -->
+	  <!-- BALL/COLLISION -->
+	  <!--               -->
+      <!--<model name="ball">
+		  <link name="link">
+		  <pose>0.75 0.75 0.0 0 0 0</pose>
+		  <collision name="ball_collision">
+			  <geometry>
+				  <sphere>
+					  <radius>0.05</radius>
+				  </sphere>
+			  </geometry>
+		  </collision>
+
+		  <visual name="visual">
+			  <geometry>
+				  <sphere>
+					  <radius>0.05</radius>
+				  </sphere>
+			  </geometry>
+			  <material>
+				  <ambient>0.3 0.3 0.3 1</ambient>
+				  <diffuse>1.0 0.5 0.0 1</diffuse>
+				  <specular>0.01 0.01 0.01 1</specular>
+				  <emissive>0 0 0 1</emissive>
+				  <shader type='vertex'>
+					  <normal_map>__default__</normal_map>
+				  </shader>
+			  </material>
+		  </visual>
+
+		  <sensor name='my_contact' type='contact'>
+			  <contact>
+				  <collision>ball_collision</collision>
+			  </contact>
+		  </sensor>
+		  </link>
+
+		  <plugin name="PropPlugin" filename="libgazeboPropPlugin.so" />
+      </model>-->
+
+	  <!--               -->
+	  <!-- TUBE/COLLISION -->
+	  <!--               -->
+	  <model name="tube">
+      <pose>0.605 0 0.027500 0 0 0</pose>
+      <link name="link">
+		    <collision name="tube_collision">
+			    <geometry>
+			      <box>
+					    <!--radius>0.02</radius-->
+					    <size> .02 .02 .04</size>
+			      </box>
+			    </geometry>
+		    </collision>
+		    <visual name="visual">
+			    <geometry>
+				    <box>
+					    <!--radius>0.02</radius-->
+					    <size>.04 .04 .04</size>
+            </box>
+			    </geometry>
+			    <material>
+				    <ambient>0.5 0.5 0.5 1</ambient>
+				    <diffuse>0.01 0.5 0.5 1</diffuse>
+				    <specular>0.01 0.01 0.01 1</specular>
+				    <emissive>0.1 0.1 0 0</emissive>
+				    <shader type='vertex'>
+					    <normal_map>__default__</normal_map>
+				    </shader>
+			    </material>
+		    </visual>
+		    <sensor name='my_contact' type='contact'>
+			    <contact>
+				    <collision>tube_collision</collision>
+			    </contact>
+		    </sensor>
+		  </link>
+
+     <!-- <link name="point">
+        <pose>0 0 0.05 0 0 0</pose>
+        <collision name="point_collision">
+			    <geometry>
+			      <cylinder>
+					    <radius>0.0005</radius>
+					    <length>0.0001</length>
+      </cylinder>
+			    </geometry>
+		    </collision>
+		    <visual name="visual">
+			    <geometry>
+				    <cylinder>
+					    <radius>0.05</radius>
+					    <length>0.0001</length>
+            </cylinder>
+			    </geometry>
+			    <material>
+            <ambient>1 0 0 1</ambient>
+            <diffuse>1 0 0 1</diffuse>
+            <specular>0.1 0.1 0.1 1</specular>
+            <emissive>0 0 0 0</emissive>
+          </material>
+		    </visual>
+      </link>
+
+      <joint name="point" type="fixed">
+        <parent>link</parent>
+        <child>point</child>
+      </joint>-->
+
+
+      <plugin name="PropPlugin" filename="libgazeboPropPlugin.so" />
+	  </model>
+
+  </world>
+</sdf>
