@@ -2,8 +2,11 @@ from collections import deque
 from imutils.video import VideoStream
 import numpy as np
 
+#imutil function is to make basic image processing functions such as 
+#translation, rotation, resizing, skeletonization, displaying Matplotlib images, 
+#sorting contours, detecting edges, and much more easier with OpenCV.
 import cv2
-import imutils
+import imutils  
 import time
 import math
 import sys
