@@ -1,45 +1,320 @@
+# User interface to move e.DO
+
+
+# ============================ IMPORTS ============================
 from manipulation.manipulationWQueue import *
+from pynput import keyboard
+from termios import tcflush, TCIOFLUSH
+import time
+import os
+import sys
+# ================================================================= [end imports]
+
+
+sys.path.append("/home/nvidia/jetson-reinforcement/build/aarch64")
+
+# ===================================== FUNCTIONS =====================================
+
+# Function that gets a winning joint angle from Gazebo
+def get_joint_angles():
+    joint_file = "/home/nvidia/jetson-reinforcement/build/aarch64/bin/results.txt"
+    joint_data = []
+
+    f = open(joint_file, "r")
+
+    for i in range(6):
+      joint_data.append(int(f.readline()))
+
+    # Debug: Print angles gotten from text file
+   
+    return joint_data
+
+#Function that gets the joint angles to reach the bucket
+def put_in_bucket():
+    joint_data_bucket = []
+    color = "" 
+    c = open("/home/nvidia/jetson-reinforcement/build/aarch64/bin/color.txt", "r")
+    color = c.read()
+    print(color)
+    if (color == "blue"):
+        joint_data_bucket = [40, -55, -60, -80, -75, 95, 0.0, 0.0, 0.0, 0.0]
+    if (color == "green"): 
+        joint_data_bucket = [30, -70, -20, -20, -50, 20, 0.0, 0.0, 0.0, 0.0]
+    if (color == "red"):
+        print("I am red")
+        joint_data_bucket = [5, -70, -10, -25, -73, 20, 0.0, 0.0, 0.0, 0.0]
+
+    #Debug: Print angles gotten from text file
+   
+    return joint_data_bucket
+
+# Function that gets the joint angle for the base rotator from Gazebo
+#def get_base():
+    #joint_file = "/home/nvidia/jetson-reinforcement/build/aarch64/bin/xy.txt"
+    
+    #f = open(joint_file, "r")
+    
+    #return float(f.readline())
+    
+# Function that performs grab attempt   
+def move_arm():
+      
+    joint_data = get_joint_angles()
+
+   # man.setGripper(80)      # Max gripper opening
+    joint_data.append(80)
+    joint_data.append(0.0)
+    joint_data.append(0.0)
+    joint_data.append(0.0)
+    
+    print "Joint data =", joint_data, "\n"
+    joint_data_vector = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    
+    vector_number = 1
+    for i in range (0, vector_number):
+        for j in range (0, 10):
+            if (joint_data_vector[j] < joint_data[j] and joint_data[j] >= 0):
+                joint_data_vector[j] += (joint_data[j] / float(vector_number))
+                        
+            if (joint_data_vector[j] > joint_data[j] and joint_data[j] < 0):
+                joint_data_vector[j] += (joint_data[j] / float(vector_number))
+    
+        print "Vector", i + 1, '\n', joint_data_vector, '\n'
+        man.jointMove(joint_data_vector)
+    
+     
+    # Move to and grab object
+   # man.jointMove(joint_data)
+    joint_data[6] = 0
+    man.jointMove(joint_data)
+    
+    # Lift object
+    joint_data[1] = joint_data[1] - 15
+    man.jointMove(joint_data)
+    
+    # Put object back down
+    joint_data[1] = joint_data[1] + 15
+    man.jointMove(joint_data)
+
+    # Release object and return to home position
+    joint_data[6] = 80
+    man.jointMove(joint_data)
+    joint_data[6] = 0
+    man.jointMove()
+    
+def move_arm_bucket():
+
+    joint_data = get_joint_angles()
+    #temp = get_base()
+
+    #joint_data[0] = get_base()
+    #joint_data[3] = 0
+    #joint_data[5] = 0
+    joint_data_bucket = put_in_bucket()
+    print(joint_data_bucket)
+    man.setGripper(80)      # Max gripper opening
+    # joint_data = man.joints   # [Artifact of previous code]
+    joint_data.append(80)
+    joint_data.append(0.0)
+    joint_data.append(0.0)
+    joint_data.append(0.0)
+
+    ## Move to and grab object
+    man.jointMove(joint_data)
+    joint_data[6] = 0
+    man.jointMove(joint_data)
+    
+    #print(joint_data)
+    # Lift object
+    #joint_data[1] = joint_data[1] - 10
+    #man.jointMove(joint_data)
+      #Home Position 
+    man.jointMove()
+    #Move to bucket 
+    
+    man.jointMove(joint_data_bucket)
+      # Release object
+    joint_data_bucket[6] = 80
+    man.jointMove(joint_data_bucket)
+    #Close up Gripper 
+    joint_data_bucket[6] = 0
+    man.jointMove(joint_data_bucket)
+    #Home Position 
+    man.jointMove()
+
+# Keyboard listener function to start e.DO movement
+def start_key(key):
+    if key == keyboard.Key.space:
+        print("\n< Continuously running e.DO... >\n")
+        return False
+
+# Keyboard listener function to stop e.DO movement
+def stop_key(key):
+    if key == keyboard.Key.esc:
+        print("\n< Stopping e.DO... >\n")
+        return False
+
+# ===================================================================================== [end functions]
+
+# ================================================== MAIN ==================================================
 
 if __name__ == '__main__':
 
   rospy.init_node("sp_demo1", anonymous = True)
   man = Manipulation()
 
-  print("===============")
-  print(" Arm Terminal  ")
-  print("===============")
+  os.system('cls||clear')   # clear terminal screen
+  
+
 
   while True:
-    response = raw_input("To attempt to pick enter (y) to exit enter (n): ")
-    if(response == "n"):
-      exit(0)
-    if(response == "y"):
-
       
-      print("Moving arm")
+    # Flush input buffer
+    sys.stdout.flush();
+    tcflush(sys.stdin, TCIOFLUSH)
+      
+    print("=================================================================")
+    print("                         Arm Terminal                            ")
+    print("=================================================================") 
+    
+    response = raw_input("0: Exit\n1: Single grab attempt\n2: Continuous grab attempts\n3: Single bucket drop\n4: Continuous bucket drops\n5: Dance\n6: Home position\n\n")    # Action menu 
 
-      # get new joint angles updated by callback
-      joint_data = man.joints
-      # open the gripper to max
-      man.setGripper(80)
+    while((response != "0") and (response != "1") and (response != "2") and (response != "3") and (response != "4") and (response != "5") and (response != "6") and (response != "b")):     # Input validation loop
+        response = (raw_input("Please select a valid option.\n\n0: Exit\n1: Single grab attempt\n2: Continuous grab attempts\n3: Single bucket drop\n4: Continuous bucket drops\n5: Dance\n6: Home position\n\n"))
+    
+    if(response == "0"):        # Exit arm terminal
+        print("< Exiting... >\n")
+        time.sleep(0.25)
+        exit(0)
+      
+    elif(response == "1"):      # Single grab attempt
+      print("< Moving e.DO to object once... >\n")
+      time.sleep(0.25)
+      move_arm()
+      
+    elif(response == "2"):      # Continuous grab attempts
+        
 
-      # move to object
-      man.jointMove(joint_data)
+        # results.txt comparisons to determine if e.DO has won in the simulation
+        current_angles = get_joint_angles()
+        updated_angles = current_angles
 
-      # grab object
-      man.setGripper()
+        print("Press Space to start and Esc to stop.")
+        
+        #  Wait for Space key to start e.DO
+        with keyboard.Listener (on_press = start_key) as listener:
+            listener.join()
+        
+        # Wait for Esc key to stop e.DO and return to menu
+        with keyboard.Listener(on_press = stop_key) as listener:
+            print("e.DO will dance while waiting for a win in the simulation.\n")
+            while True:         # Continuously move e.DO
 
-      # lift object a bit
-      joint_data[1] = joint_data[1] - 10
-      man.jointMove(joint_data)
+                while (updated_angles == current_angles):   # Runs until there is a win in Gazebo
+                    man.dance()     # Dance, e.DO, dance!
+                    updated_angles = get_joint_angles()     # Breaks dance loop when angles have been updated after a win
+                                                            # Otherwise, keep on dancin'...
+                    if (updated_angles != current_angles):
+                        break
+                    time.sleep(12)
 
-      # put it back down
-      joint_data[1] = joint_data[1] + 10
-      man.jointMove(joint_data)
 
-      # open gripper to release object
-      man.setGripper(80)
+             #   time.sleep(12)
+                move_arm()  # Move according to the angle updates in results.txt
+                current_angles = updated_angles # Reinitialize current_angles to execute dance loop again
 
-      # return to home position
-      man.jointMove()
+                                
+                if (not listener.running):      # Stop e.DO, return to home position,
 
+                    man.jointMove()
+                    break
+                
+    elif(response == "3"):          # Single bucket
+        print("< Moving e.DO to bucket once... >\n")
+        time.sleep(0.25)
+        move_arm_bucket()
+        
+        
+    elif(response == "4"):          # Continuous bucket
+        print("< Continuously moving e.DO to bucket... >\n")    
+        time.sleep(0.25)
+        
+        # results.txt comparisons to determine if e.DO has won in the simulation
+        current_angles = get_joint_angles()
+        updated_angles = current_angles
+
+        print("Press Space to start and Esc to stop.")
+            
+        #  Wait for Space key to start e.DO
+        with keyboard.Listener (on_press = start_key) as listener:
+            listener.join()
+            
+        # Wait for Esc key to stop e.DO and return to menu
+        with keyboard.Listener(on_press = stop_key) as listener:
+            print("e.DO will dance while waiting for a win in the simulation.\n")
+            while True:         # Continuously move e.DO
+                while (updated_angles == current_angles):   # Runs until there is a win in Gazebo
+                    man.dance()     # Dance, e.DO, dance!
+                    updated_angles = get_joint_angles()     # Breaks dance loop when angles have been updated after a win
+                                                            # Otherwise, keep on dancin'...
+                    if (updated_angles != current_angles):
+                        break
+                    time.sleep(12)
+
+             #   time.sleep(12)
+                move_arm_bucket()
+                current_angles = updated_angles # Reinitialize current_angles to execute dance loop again
+
+                if (not listener.running):      # Stop e.DO, return to home position,
+                    man.jointMove()
+                    break
+
+
+    elif(response == "5"):          # Dance
+        print("< e.DO, the dancing robot arm >\n")
+        
+        print("Press Space to start and Esc to stop.")
+            
+        #  Wait for Space key to start e.DO
+        with keyboard.Listener (on_press = start_key) as listener:
+            listener.join()
+        # Wait for Esc key to stop e.DO and return to menu
+        with keyboard.Listener(on_press = stop_key) as listener:
+            while True:
+                man.dance()
+                time.sleep(10)   # Wait 10 seconds before executing next loop iteration
+                                    # to prevent building up large queue of dance moves
+                
+                if (not listener.running):      # Stop e.DO, return to home position,
+                    man.jointMove()
+                    break
+            
+            
+    elif(response == "6"):          # Home position
+        print("< Returning e.DO to home position... >\n")
+        man.jointMove()
+        time.sleep(0.25)
+
+
+    elif(response == "b"):          # Hidden function to move only to bucket for testing angles
+        print("< Moving to bucket... >\n")
+        time.sleep(0.25)
+        
+        joint_data_bucket = put_in_bucket()
+        man.jointMove(joint_data_bucket)
+        joint_data_bucket[6] = 80
+        man.jointMove(joint_data_bucket)
+        joint_data_bucket[6] = 0
+        man.jointMove(joint_data_bucket)
+        man.jointMove()
+
+    else:                           # Hmm....
+        print("< This should never execute... >\n")
+        time.sleep(0.25)
+
+
+            
+# ========================================================================================================== [end main]
+
+
+ 
