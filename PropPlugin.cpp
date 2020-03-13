@@ -131,8 +131,7 @@ void PropPlugin::ResetDynamics()
   file.open("/home/nvidia/jetson-reinforcement/build/aarch64/bin/newX.txt");
   char charcter;
   string x;
-
-  
+ 
   while(!file.eof())
   {
     file>>charcter;
@@ -142,13 +141,57 @@ void PropPlugin::ResetDynamics()
     }
     x+= charcter;
   }
+ 
   double newX = atof(x.c_str());
   newX = newX/100;
   file.close();
-  originalPose = math::Pose(newX, 0, 0.027500, 0, 0, 0);
+
+
+ //added by Nate for xy import 
+  fstream xyFile;
+  xyFile.open("/home/nvidia/jetson-reinforcement/build/aarch64/bin/xy.txt");
+  char xyChar;
+  string y;
+  
+  while (!xyFile.eof()){
+	  xyFile >> xyChar;
+	  
+	  if (xyFile.eof()){
+			break;
+		}
+	  y += xyChar;
+	  
+  }
+  double xy = atof(y.c_str());
+  xy /= 100;
+  
+  xyFile.close();
+  
+ 
+
+  //Added by Hawraa to add depth input to Prop. 
+  fstream Zfile;
+  Zfile.open("/home/nvidia/jetson-reinforcement/build/aarch64/bin/newZ.txt");
+  char charc;
+  string z;
+
+  
+  while(!Zfile.eof())
+  {
+    Zfile>>charc;
+    if(Zfile.eof())
+    {
+      break;
+    }
+    z+= charc;
+  }
+ 
+  double newZ = atof(z.c_str());
+  newZ = newZ/100;
+  Zfile.close();
+  originalPose = math::Pose(newX, xy, newZ, 0, 0, 0);
   //std::cout << originalPose << std::endl;
   //model->SetWorldPose(math::Pose(newX, 0.0, 0.0250));//math::Pose
-
   
   model->SetWorldPose(originalPose);
 }
