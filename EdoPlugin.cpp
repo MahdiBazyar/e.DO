@@ -1,6 +1,6 @@
 /** @file EdoPlugin.cpp
  *  @brief Plugin for e.DO robot and Gazebo simulator for reinforced learning.
- *  Resources: http://github.com/dusty-nv/jetson-reinforcement
+ *  Resources: http://github.com/dusty-nv/jetson-reinforcementg
  *  @author Ashwini Magar, Jack Shelata, Alessandro Piscioneri
  *  @date June 1, 2018
  */
@@ -25,14 +25,14 @@
 // Joint ranges for the edo segments and rotating base.
 #define JOINT_MIN     -0.0873f      /**< Joint Min */   // Was -0.7854f
 #define JOINT_MAX     1.5708f       /**< Joint Max */
-#define BASE_JOINT_MIN  -0.0873f    /**< Joint 1/Base Min */  // Was -1.5708
-#define BASE_JOINT_MAX  1.5708f     /**< Joint 1/Base Max */  // Was 1.5708
+#define BASE_JOINT_MIN  -0.7854f    /**< Joint 1/Base Min */  // Was -1.5708
+#define BASE_JOINT_MAX  0.7854f     /**< Joint 1/Base Max */  // Was 1.5708
 #define ROTATE4MAX  0f
 //#define BASE_JOINT_MIN  -0.7854f      // FOR 3+ AXIS BASE
 //#define BASE_JOINT_MAX  0.7854f       // FOR 3+ AXIS BASE
 
 // Turn on velocity based control
-#define VELOCITY_CONTROL false      /**< Set to true for velocity control */
+#define VELOCITY_CONTROL true      /**< Set to true for velocity control */
 #define VELOCITY_MIN -0.2f          /**< Min velocity */
 #define VELOCITY_MAX  0.2f          /**< Max velocity */
 
@@ -53,7 +53,7 @@
   #define LOADM false     /**< Set to false for training and true for testing */
   #define TESTMODE false  /**< Set to true for testing/inference */
   #define SAVEMODE true   /**< Set to true for saving */
-  #define ALLOW_RANDOM true  /**< Set to true to allow for random actions */ //edo teram
+  #define ALLOW_RANDOM true  /**< Set to true to allow for random actions */ //edo team
 
 #elif MODE == 1
 
@@ -222,31 +222,36 @@ collisionNode(new gazebo::transport::Node())
                         // If this is changed, change reset val in Relay.cpp
 
   // set the initial positions and velocities to the reset
+
   for( uint32_t n=0; n < DOF; n++ )
-  {
+   {
     ref[n] = resetPos[n]; //JOINT_MIN;
     vel[n] = 0.0f;
-  }
+   }
+  
 
   // set the joint ranges
-  for( uint32_t n=0; n < DOF; n++ )
-  {
-    jointRange[n][0] = JOINT_MIN;
-    jointRange[n][1] = JOINT_MAX;
-    if(DOF ==3)
-    {
-      jointRange[3][0] = 0.0f;
-      jointRange[3][1] = 0.0f;
-    }
 
-  }
+  for( uint32_t n=0; n < DOF; n++ )
+    {
+      jointRange[n][0] = JOINT_MIN;
+      jointRange[n][1] = JOINT_MAX;
+      if(DOF ==3)
+        {
+         jointRange[3][0] = 0.0f;
+         jointRange[3][1] = 0.0f;
+        }
+    }
+  
 
   // if the base is freely rotating, set it's range separately
+  
   if( !LOCKBASE )
-  {
-    jointRange[0][0] = BASE_JOINT_MIN;
-    jointRange[0][1] = BASE_JOINT_MAX;
-  }
+    {
+     jointRange[0][0] = BASE_JOINT_MIN;
+     jointRange[0][1] = BASE_JOINT_MAX;
+    }
+  
 
   if (LOG_FILE) //Log on a file the parameters
   {
@@ -402,7 +407,7 @@ bool EdoPlugin::saveAgent(std::string filename)
 bool EdoPlugin::loadAgent(std::string filename)
 {
   return agent->LoadCheckpoint(filename.c_str());
-} // Edo{lugin::loadAgent()
+} // EdoPlugin::loadAgent()
 
 /** @brief Callback function called by camera subscriber when new image is
  *  available. This version supports single image.
@@ -685,8 +690,11 @@ bool EdoPlugin::updateAgent()
   if( joint < jointRange[jointIdx][0] )
     joint = jointRange[jointIdx][0];
 
-  if( joint > jointRange[jointIdx][1] )
-    joint = jointRange[jointIdx][1];
+  if( joint > jointRange[jointIdx][3] ) //kiki
+    joint = jointRange[jointIdx][3];
+    
+
+
 
   //std::cout<<" Update Joint: "<<jointIdx <<" Value: "<<joint;
   ref[jointIdx] = joint;
@@ -850,12 +858,26 @@ void EdoPlugin::OnUpdate(const common::UpdateInfo& updateInfo)
     // Change to 2,0,1,3,4,5 to do 2D, 2 joint training
     // Change to 0,1,2,3,4,5 to do 3D, 3 joint training
     
-    //j2_controller->SetJointPosition(this->model->GetJoint("joint_1"),  ref[0]);
+    
+    j2_controller->SetJointPosition(this->model->GetJoint("joint_1"),  ref[0]);
     j2_controller->SetJointPosition(this->model->GetJoint("joint_2"),  ref[1]);
     j2_controller->SetJointPosition(this->model->GetJoint("joint_3"),  ref[2]);
-    //j2_controller->SetJointPosition(this->model->GetJoint("joint_4"),  ref[3]);
+    j2_controller->SetJointPosition(this->model->GetJoint("joint_4"),  ref[3]);
     j2_controller->SetJointPosition(this->model->GetJoint("joint_5"),  ref[4]);
+    j2_controller->SetJointPosition(this->model->GetJoint("joint_6"),  ref[5]);
+    
+    
+    //j2_controller->SetJointPosition(this->model->GetJoint("joint_1"),  ref[0]);
+    //j2_controller->SetJointPosition(this->model->GetJoint("joint_2"),  ref[1]);
+    //j2_controller->SetJointPosition(this->model->GetJoint("joint_3"),  ref[2]);
+    //j2_controller->SetJointPosition(this->model->GetJoint("joint_4"),  -1.00);
+    //j2_controller->SetJointPosition(this->model->GetJoint("joint_5"),  ref[4]);
     //j2_controller->SetJointPosition(this->model->GetJoint("joint_6"),  ref[5]);
+    
+   /* for (int i = 0; i < DOF; i++){
+		std::cout << "ref[" << i << "] = " << ref[i] << std::endl;
+	}*/
+	
     
     /*j2_controller->SetJointPosition(this->model->GetJoint("joint_2"),  ref[0]);
     j2_controller->SetJointPosition(this->model->GetJoint("joint_2"),  ref[1]);
@@ -882,12 +904,12 @@ void EdoPlugin::OnUpdate(const common::UpdateInfo& updateInfo)
         // Change to 2,0,1,3,4,5 to do 2D, 2 joint training
         // Change to 0,1,2,3,4,5 to do 3D, 3 joint training
         if(!testAnimation){
-          //winSequenceVec.push_back(radToDeg(ref[0]));
-          //winSequenceVec.push_back(radToDeg(ref[1]));
-          //winSequenceVec.push_back(radToDeg(ref[2]));
-          //winSequenceVec.push_back(radToDeg(ref[3]));
-          //winSequenceVec.push_back(radToDeg(ref[4]));
-          //winSequenceVec.push_back(radToDeg(ref[5]));
+          winSequenceVec.push_back(radToDeg(ref[0]));
+          winSequenceVec.push_back(radToDeg(ref[1]));
+          winSequenceVec.push_back(radToDeg(ref[2]));
+          winSequenceVec.push_back(radToDeg(ref[3]));
+          winSequenceVec.push_back(radToDeg(ref[4]));
+          winSequenceVec.push_back(radToDeg(ref[5]));
           
           winSequenceVec.clear();
           for(int i = 0; i < 6; i++){
@@ -933,7 +955,7 @@ void EdoPlugin::OnUpdate(const common::UpdateInfo& updateInfo)
           if(winState){
             outfile.open("results.txt", std::ios::trunc);
             for(int i = 0; i < 6; i++){
-               std::cout << "\n" << endJoints[i];
+               std::cout << "\n" << "Joint " << i + 1 << " Movement Angle: " << endJoints[i];
                outfile << endJoints[i] << std::endl;            
             }
             std::cout << "\n";
@@ -1161,9 +1183,9 @@ void EdoPlugin::OnUpdate(const common::UpdateInfo& updateInfo)
       printf("\n");
       real_score = float(successfulGrabs)/float(totalRuns);
 
-      if(SAVEMODE && totalRuns % 5000 == 0 && totalRuns > 0){
+      if(SAVEMODE && totalRuns % 2000 == 0 && totalRuns > 0){
         printf("Save checkpoint...\n");
-        std::string filename("edoCheckpoint" + std::to_string(totalRuns));
+        std::string filename("VedoCheckpoint" + std::to_string(totalRuns));
         saveAgent(filename);
       }
 /*
