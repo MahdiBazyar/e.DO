@@ -4,6 +4,7 @@
     <physics type="ode">
       <real_time_update_rate>0.000</real_time_update_rate>
       <max_step_size>0.001</max_step_size>
+      <gravity>0 0 0</gravity>
     </physics><!--COMMENT OUT FOR HP LINUX PC-->
 
 	  <light name='sun' type='directional'>
@@ -63,7 +64,7 @@
 		    </visual>
 		  </link>
 
-		  <joint name="base_link" type="fixed">
+		  <joint name="base_link" type="revolute">
 			  <child>base_link</child>
 			  <parent>world</parent>
 		  </joint>
@@ -91,7 +92,7 @@
 		</visual>
 		  </link>
 
-		  <joint name="joint_1" type="fixed"><!--Adel Change type from revolute to fixed-->
+		  <joint name="joint_1" type="revolute"><!--Adel Change type from revolute to fixed-->
 			  <child>joint_1</child>
 			  <parent>base_link</parent>
 			  <axis>
@@ -221,7 +222,7 @@
 		    </visual>
 		  </link>
 
-		  <joint name="joint_4" type="fixed"> <!--Adel Change type from revolute to fixed-->
+		  <joint name="joint_4" type="revolute"> <!--Adel Change type from revolute to fixed-->
 			  <child>joint_4</child>
 			  <parent>joint_3</parent>
 			  <axis>
@@ -291,7 +292,7 @@
 		    </visual>
 		  </link>
 
-		  <joint name="joint_6" type="fixed"> <!--Adel Change type from revolute to fixed-->
+		  <joint name="joint_6" type="revolute"> <!--Adel Change type from revolute to fixed-->
 			  <child>joint_6</child>
 			  <parent>joint_5</parent>
 			  <axis>
