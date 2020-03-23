@@ -1,10 +1,11 @@
 <?xml version="1.0" ?>
+<!-- belongs in directory /home/nvidia/jetson-reinforcement/build/aarch64-->
 <sdf version="1.4">
   <world name="edo_world">
     <physics type="ode">
       <real_time_update_rate>0.000</real_time_update_rate>
       <max_step_size>0.001</max_step_size>
-      <gravity>0 0 0</gravity>
+      <gravity>0 0 0</gravity><!--Gravity set to 0 to allow object to stay at proper height-->
     </physics><!--COMMENT OUT FOR HP LINUX PC-->
 
 	  <light name='sun' type='directional'>
@@ -92,7 +93,7 @@
 		</visual>
 		  </link>
 
-		  <joint name="joint_1" type="revolute"><!--Adel Change type from revolute to fixed-->
+		  <joint name="joint_1" type="revolute"><!--Changed from "fixed" to "revolute"-->
 			  <child>joint_1</child>
 			  <parent>base_link</parent>
 			  <axis>
@@ -222,7 +223,7 @@
 		    </visual>
 		  </link>
 
-		  <joint name="joint_4" type="revolute"> <!--Adel Change type from revolute to fixed-->
+		  <joint name="joint_4" type="revolute"> <!--Changed from "fixed" to "revolute"-->
 			  <child>joint_4</child>
 			  <parent>joint_3</parent>
 			  <axis>
@@ -292,7 +293,7 @@
 		    </visual>
 		  </link>
 
-		  <joint name="joint_6" type="revolute"> <!--Adel Change type from revolute to fixed-->
+		  <joint name="joint_6" type="revolute"> <!--Changed from "fixed" to "revolute"-->
 			  <child>joint_6</child>
 			  <parent>joint_5</parent>
 			  <axis>
