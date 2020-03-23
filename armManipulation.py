@@ -1,4 +1,5 @@
 # User interface to move e.DO
+# belongs in direcrory /home/nvidia/jetson_ctrl_ws/src/edoProjectFinal
 
 
 # ============================ IMPORTS ============================
@@ -9,7 +10,6 @@ import time
 import os
 import sys
 # ================================================================= [end imports]
-
 
 sys.path.append("/home/nvidia/jetson-reinforcement/build/aarch64")
 
@@ -29,32 +29,29 @@ def get_joint_angles():
    
     return joint_data
 
-#Function that gets the joint angles to reach the bucket
+# Function that gets the joint angles to reach the bucket
 def put_in_bucket():
     joint_data_bucket = []
     color = "" 
     c = open("/home/nvidia/jetson-reinforcement/build/aarch64/bin/color.txt", "r")
     color = c.read()
     print(color)
+    
+    # FULL DISCLOSURE: e.DO's movements to the buckets are hard-coded here 
+    # to work with our current setup in the lab.
     if (color == "blue"):
+        print("Blue detected")
         joint_data_bucket = [40, -55, -60, -80, -75, 95, 0.0, 0.0, 0.0, 0.0]
     if (color == "green"): 
+        print("Green detected")
         joint_data_bucket = [30, -70, -20, -20, -50, 20, 0.0, 0.0, 0.0, 0.0]
     if (color == "red"):
-        print("I am red")
+        print("Red detected")
         joint_data_bucket = [5, -70, -10, -25, -73, 20, 0.0, 0.0, 0.0, 0.0]
 
-    #Debug: Print angles gotten from text file
+    # Debug: Print angles gotten from text file
    
     return joint_data_bucket
-
-# Function that gets the joint angle for the base rotator from Gazebo
-#def get_base():
-    #joint_file = "/home/nvidia/jetson-reinforcement/build/aarch64/bin/xy.txt"
-    
-    #f = open(joint_file, "r")
-    
-    #return float(f.readline())
     
 # Function that performs grab attempt   
 def move_arm():
@@ -67,79 +64,91 @@ def move_arm():
     joint_data.append(0.0)
     joint_data.append(0.0)
     
+    # Debug: Prints joint angles
     print "Joint data =", joint_data, "\n"
-    joint_data_vector = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     
-    vector_number = 1
-    for i in range (0, vector_number):
+# ================================== Vectors ==================================
+# "Vectors," in this context, are intermediate angles for each joint
+# between their final values, divided evenly by the number of vectors.
+ 
+    joint_data_vector = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]      # empty copy of joint_data that
+                                                                                # will contain intermediate moves
+    
+    vector_number = 1   # More vectors should amount to smoother movement; must be an integer
+                        # Currently set to 1 until "fly" feature can be enabled to connect movements without pausing
+                        # Alternatively, 1000+ vectors and figure out how to speed up e.DO.
+                        
+    for i in range (0, vector_number):  # Angles progressively build up to the joint_data values.
         for j in range (0, 10):
-            if (joint_data_vector[j] < joint_data[j] and joint_data[j] >= 0):
+            if (joint_data_vector[j] < joint_data[j] and joint_data[j] >= 0):   # Handles positive angles
                 joint_data_vector[j] += (joint_data[j] / float(vector_number))
                         
-            if (joint_data_vector[j] > joint_data[j] and joint_data[j] < 0):
+            if (joint_data_vector[j] > joint_data[j] and joint_data[j] < 0):    # Handles negative angles
                 joint_data_vector[j] += (joint_data[j] / float(vector_number))
     
+        # Debug: Prints the value of each vector; they should build up to the original values in joint_data
         print "Vector", i + 1, '\n', joint_data_vector, '\n'
+        
+        # Moves each joint the new intermediate angle each iteration
         man.jointMove(joint_data_vector)
-    
+ 
+# **This functionality has only been implemented here; 
+# extenuating circumstances have prevented us from fleshing it out. It may be best
+# to make an entirely new function of this in the future so all of e.DO's moves use it.
+
+# ============================================================================= [end vectors]    
      
-    # Move to and grab object
-   # man.jointMove(joint_data)
-    joint_data[6] = 0
+
+    joint_data[6] = 0           # Close gripper
     man.jointMove(joint_data)
     
     # Lift object
-    joint_data[1] = joint_data[1] - 15
+    joint_data[1] = joint_data[1] - 15      # Raise joint 2 slightly
     man.jointMove(joint_data)
     
     # Put object back down
-    joint_data[1] = joint_data[1] + 15
+    joint_data[1] = joint_data[1] + 15      # Lower joint 2
     man.jointMove(joint_data)
 
     # Release object and return to home position
-    joint_data[6] = 80
+    joint_data[6] = 80                      # Open gripper
     man.jointMove(joint_data)
-    joint_data[6] = 0
-    man.jointMove()
+    joint_data[6] = 0                       # Close gripper
+    man.jointMove()                         # Go home
     
 def move_arm_bucket():
 
     joint_data = get_joint_angles()
-    #temp = get_base()
 
-    #joint_data[0] = get_base()
-    #joint_data[3] = 0
-    #joint_data[5] = 0
     joint_data_bucket = put_in_bucket()
     print(joint_data_bucket)
-    man.setGripper(80)      # Max gripper opening
-    # joint_data = man.joints   # [Artifact of previous code]
+    man.setGripper(80)
+
     joint_data.append(80)
     joint_data.append(0.0)
     joint_data.append(0.0)
     joint_data.append(0.0)
 
-    ## Move to and grab object
+    # Move to and grab object
     man.jointMove(joint_data)
     joint_data[6] = 0
     man.jointMove(joint_data)
     
-    #print(joint_data)
-    # Lift object
-    #joint_data[1] = joint_data[1] - 10
-    #man.jointMove(joint_data)
-      #Home Position 
+    # Home Position 
     man.jointMove()
-    #Move to bucket 
     
+    # Move to bucket 
     man.jointMove(joint_data_bucket)
-      # Release object
+    
+    # Release object
     joint_data_bucket[6] = 80
     man.jointMove(joint_data_bucket)
-    #Close up Gripper 
+    
+    # Close gripper 
     joint_data_bucket[6] = 0
     man.jointMove(joint_data_bucket)
-    #Home Position 
+    
+    # Home Position 
     man.jointMove()
 
 # Keyboard listener function to start e.DO movement
@@ -216,7 +225,7 @@ if __name__ == '__main__':
                                                             # Otherwise, keep on dancin'...
                     if (updated_angles != current_angles):
                         break
-                    time.sleep(12)
+                    time.sleep(12)  # Wait 12 seconds to avoid building up a large queue of movements for e.DO
 
 
              #   time.sleep(12)
@@ -259,7 +268,7 @@ if __name__ == '__main__':
                                                             # Otherwise, keep on dancin'...
                     if (updated_angles != current_angles):
                         break
-                    time.sleep(12)
+                    time.sleep(12)  # Wait 12 seconds to avoid building up a large queue of movements for e.DO
 
              #   time.sleep(12)
                 move_arm_bucket()
