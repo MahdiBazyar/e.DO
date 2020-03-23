@@ -1,9 +1,13 @@
+// belongs in directory /home/nvidia/jetson-reinforcement/gazebo
+// must run makefile in /home/nvidia/jetson-reinforcement/build after each update
+
 /** @file EdoPlugin.cpp
  *  @brief Plugin for e.DO robot and Gazebo simulator for reinforced learning.
- *  Resources: http://github.com/dusty-nv/jetson-reinforcementg
+ *  Resources: http://github.com/dusty-nv/jetson-reinforcement
  *  @author Ashwini Magar, Jack Shelata, Alessandro Piscioneri
  *  @date June 1, 2018
  */
+ 
 #define FILE_VERSION  1   /**< File version number */
 
 #include "EdoPlugin.h"
@@ -32,7 +36,7 @@
 //#define BASE_JOINT_MAX  0.7854f       // FOR 3+ AXIS BASE
 
 // Turn on velocity based control
-#define VELOCITY_CONTROL true      /**< Set to true for velocity control */
+#define VELOCITY_CONTROL true      /**< Set to true for velocity control */		// Nate Smith 3-23-20: Set to true; disabling will yield better training results
 #define VELOCITY_MIN -0.2f          /**< Min velocity */
 #define VELOCITY_MAX  0.2f          /**< Max velocity */
 
@@ -874,6 +878,7 @@ void EdoPlugin::OnUpdate(const common::UpdateInfo& updateInfo)
     //j2_controller->SetJointPosition(this->model->GetJoint("joint_5"),  ref[4]);
     //j2_controller->SetJointPosition(this->model->GetJoint("joint_6"),  ref[5]);
     
+   // Nate Smith 3-23-20: Display ref array values while training  
    /* for (int i = 0; i < DOF; i++){
 		std::cout << "ref[" << i << "] = " << ref[i] << std::endl;
 	}*/
@@ -1182,7 +1187,9 @@ void EdoPlugin::OnUpdate(const common::UpdateInfo& updateInfo)
 
       printf("\n");
       real_score = float(successfulGrabs)/float(totalRuns);
-
+      
+      // Nate Smith 3-23-20: Saves checkpoint every 2000 iterations
+      // 					 "Vedo": Enabled velocity control
       if(SAVEMODE && totalRuns % 2000 == 0 && totalRuns > 0){
         printf("Save checkpoint...\n");
         std::string filename("VedoCheckpoint" + std::to_string(totalRuns));
