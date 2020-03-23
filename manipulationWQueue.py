@@ -1,4 +1,7 @@
 #!/usr/bin/python3
+
+# belongs in direcrory /home/nvidia/jetson_ctrl_ws/src/edoProjectFinal/manipulation
+
 #ROS Libraries
 import rospy
 import roslib
