@@ -1,3 +1,6 @@
+# Activates the camera and object detection using colors
+# belongs in direcrory /home/nvidia/jetson-reinforcement/build/aarch64
+
 from collections import deque
 from imutils.video import VideoStream
 import numpy as np
