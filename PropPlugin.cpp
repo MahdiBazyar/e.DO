@@ -1,3 +1,6 @@
+// belongs in directory /home/nvidia/jetson-reinforcement/gazebo
+// must run makefile in /home/nvidia/jetson-reinforcement/build after each update
+
 /** @file PropPlugin.cpp
  *  @brief Plugin for the prop in Gazebo e.DO simulation for reinforcement
  *  learning. Resources: http://github.com/dusty-nv/jetson-reinforcement
