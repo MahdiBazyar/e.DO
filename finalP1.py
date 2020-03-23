@@ -1,3 +1,6 @@
+# Activates the camera and object detection using only circles
+# belongs in direcrory /home/nvidia/jetson-reinforcement/build/aarch64
+
 from collections import deque
 from imutils.video import VideoStream
 import numpy as np
