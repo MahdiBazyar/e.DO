@@ -1,7 +1,7 @@
-====================================================
+======================================================
      Comau e.DO Project Operation Guidelines v2.0
-			     Updated 3-24-2020
-====================================================
+                   Updated 3-24-2020
+======================================================
 
 This document will guide you through the setup and operation of e.DO in the Comau Lift lab.
 
