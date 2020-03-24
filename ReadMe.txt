@@ -82,9 +82,9 @@ From here, the operation of the various components is fairly self-explanatory fr
 
 ---------------------------------------------------------------------------------------------------------------
 
-======================
+==============
 Manual control
-======================
+==============
 1. Not part of the main project is the ability to control e.DO manually using the keyboard and/or a controller. To do so, connect to the wireless access point "edowifi240.xxx...." (Password: edoedoedo).
 
 2. Next, perform the same steps as above, except this time, enter "./control.sh".
