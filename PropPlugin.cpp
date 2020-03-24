@@ -130,6 +130,7 @@ void PropPlugin::ResetDynamics()
 
   //Read from txt file //Adel and Tyler
   //originalPose = math::Pose(0.63, 0, 0.027500, 0, 0, 0);
+ // X file will open 	
   fstream file;
   file.open("/home/nvidia/jetson-reinforcement/build/aarch64/bin/newX.txt");
   char charcter;
@@ -151,11 +152,12 @@ void PropPlugin::ResetDynamics()
 
 
  //added by Nate for xy import 
+// file opens the xy text that is the angle size
   fstream xyFile;
   xyFile.open("/home/nvidia/jetson-reinforcement/build/aarch64/bin/xy.txt");
   char xyChar;
   string y;
-  
+// Reads into character
   while (!xyFile.eof()){
 	  xyFile >> xyChar;
 	  
@@ -169,10 +171,11 @@ void PropPlugin::ResetDynamics()
   xy /= 100;
   
   xyFile.close();
-  
+  // 
  
 
   //Added by Hawraa to add depth input to Prop. 
+ //Opens the newZ text file that has the depth size
   fstream Zfile;
   Zfile.open("/home/nvidia/jetson-reinforcement/build/aarch64/bin/newZ.txt");
   char charc;
@@ -192,7 +195,8 @@ void PropPlugin::ResetDynamics()
   double newZ = atof(z.c_str());
   newZ = newZ/100;
   Zfile.close();
-  originalPose = math::Pose(newX, xy, newZ, 0, 0, 0);
+  originalPose = math::Pose(newX, xy, newZ, 0, 0, 0); //Sets the pose with the newX, xy, and newZ
+	// we dont use roll,pitch,yaw 
   //std::cout << originalPose << std::endl;
   //model->SetWorldPose(math::Pose(newX, 0.0, 0.0250));//math::Pose
   
