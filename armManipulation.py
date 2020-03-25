@@ -1,5 +1,11 @@
-# User interface to move e.DO
-# belongs in direcrory /home/nvidia/jetson_ctrl_ws/src/edoProjectFinal
+# ================================== Arm Manipulation ==========================================
+#  Developers: Wayne State University Senior Capstone Project Students
+#              Fall 2019: Adel Mohamed, Corey Simms, Mahmoud Elmasri, & Tyler Riojas 
+#              Winter 2020: Hawraa Banoon, Nathaniel Smith, Kristina Stevoff, & Mahdi Bazyar
+#  Directory:  /home/nvidia/jetson_ctrl_ws/src/edoProjectFinal
+#  Interface:  Arm Terminal
+#  Purpose:    Presents the user with various options to move e.DO
+# ==============================================================================================
 
 
 # ============================ IMPORTS ============================
