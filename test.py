@@ -6,7 +6,7 @@
 #  Purpose:    This file updates the object's position in simulation model
 #              while we are training the virtual e.DO              
 #  Inputs:     None           
-#  Outputs:    Updated Version Of Previous 3 Text Files 
+#  Outputs:    3 Text Files 
 #              newX.txt  (The distance of object from base of e.DO in cm) 
 #              xy.txt    (The angle that the object is in relation to e.DO in degree) 
 #              newZ.txt  (The depth of the object in cm) 
