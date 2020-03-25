@@ -98,10 +98,10 @@ while True:
           temp = raw_input("Type (y) to get object location or (n) to exit: ")
           
           if(temp == "y"):
-            count = 20
-            zCounter = 0
-            zAvg = 0
-            total = 0
+            count = 20    # Counter for frames 
+            zCounter = 0  # Counter for calcuating depth average 
+            zAvg = 0      # Average depth over a the set of frames
+            total = 0     # Total of the depth values of each frame
             
           if(temp == "n"):
             print('\n')
@@ -129,7 +129,7 @@ while True:
           inchesPerPixelH = heightIn / height #'''heightIn''' 
           inchesPerPixelW = widthIn / width #'''widthIn'''
           
-          # DETECT BLUE
+          # ================== DETECT BLUE CIRCLE =================
           hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
           mask_blue = cv2.inRange(hsv, blue_lower, blue_upper)
           res_blue = cv2.bitwise_and(img, img, mask = mask_blue)
@@ -142,7 +142,7 @@ while True:
                         param2 = 23, minRadius = 0, maxRadius = 60) 
           
         
-          # DETECT GREEN
+          # ================== DETECT GREEN CIRCLE =================
           mask_green = cv2.inRange(hsv, green_lower, green_upper)
           res_green = cv2.bitwise_and(img, img, mask = mask_green)
           gray = cv2.cvtColor(res_green, cv2.COLOR_BGR2GRAY)
@@ -153,7 +153,7 @@ while True:
                             cv2.HOUGH_GRADIENT, 0.1, 20, param1 = 40, 
                         param2 = 23, minRadius = 6, maxRadius = 60) 
           
-          # DETECT RED
+          # ================== DETECT RED CIRCLE =================
           mask_red = cv2.inRange(hsv, red_lower, red_upper)
           mask_red_T = cv2.inRange(hsv, red_lower_T, red_upper_T)
           res_red = cv2.bitwise_and(img, img, mask = mask_red | mask_red_T)
@@ -164,7 +164,8 @@ while True:
           detected_circles_red = cv2.HoughCircles(gray_blurred,  
                             cv2.HOUGH_GRADIENT, 0.1, 20, param1 = 40, 
                         param2 = 23, minRadius = 6, maxRadius = 60) 
-                        
+                       
+          # WRITE COLOR DETECTED TO TEXT FILE
           if detected_circles_green is not None: 
             f = open("color.txt", "w")
             f.write('%s' % "green")
@@ -181,7 +182,7 @@ while True:
             f.close()     
             print("Wrote red to file.")      
             
-        # Draw circles that are detected. 
+        # If any color circles detected then must perform calculations for coordinates: 
           if ((detected_circles_blue is not None)or(detected_circles_green is not None)or(detected_circles_red is not None)): 
               if detected_circles_blue is not None: 
                   detected_circles = np.uint16(np.around(detected_circles_blue))
@@ -190,11 +191,14 @@ while True:
               if detected_circles_red is not None:
                   detected_circles = np.uint16(np.around(detected_circles_red)) 
               
-              for pt in detected_circles[0, :]: 
+              for pt in detected_circles[0, :]:
+                  # Define two points and radius of circle 
                   a, b, r = pt[0], pt[1], pt[2] 
+                  
+                  # Draw a green circle around the circle detected 
                   cv2.circle(img, (a, b), r, (0, 255, 0), 2) 
-                  print(r)
-                  # Draw a small circle (of radius 1) to show the center. 
+
+                  # Draw a small red circle (of radius 1) to show the center
                   cv2.circle(img, (a, b), 1, (0, 0, 255), 3)
                   pts.appendleft((a, b))
                   
@@ -203,42 +207,45 @@ while True:
                       x = round(7.25 + (pts[0][0] * inchesPerPixelH), 2)
                       y = round(((heightIn/2) - (pts[0][1] * inchesPerPixelH) + 4.5), 2)
                       z = round((r * inchesPerPixelH) * 2, 2)
-                      # BEGIN: MATH TO CALCULATE DEPTH OF OBJECT - Hawraa Banoon 
+                      # BEGIN: MATH TO CALCULATE DEPTH OF OBJECT
                       # Source: https://www.pyimagesearch.com/2015/01/19/find-distance-camera-objectmarker-using-python-opencv/
                       if (r > 0):
                         # 4 Cm by 4 Cm object 
                         # Depth Perception calculated by: D = (W x F) / P 
                         # D = Depth, F = Focal Length, P = pixels at certain length 
                         # In this case F = (P X D) / W , Where P = 16 pixels when on table, 
-                        # D is depth of table (107 cm) and W is 4cm object 
+                        # W is 4 cm object, F = 107 cm from table to camera
                         newZ = round((4 * 856) / (r * 2), 2) 
                         newZ = 107 - newZ
                       else:
                         newZ = 6
                         
+                      #Calculate the average depth for 20 frames captured 
                       zCounter = zCounter + 1
                       total = total + newZ
                       zAvg = total / zCounter
-                      print zAvg
+                      #print zAvg
                       #print(newZ) 
                       
-                      # END: MATH TO CALCULATE DEPTH OF OBJECT - Hawraa Banoon 
+                      # END: MATH TO CALCULATE DEPTH OF OBJECT 
                       
+                      #Convert from cartesian coordinates to 3D Polar Coordinates 
                       newX = round(math.sqrt((x*x) + (y*y) +(zAvg*zAvg)), 2)
                       xy = math.degrees(math.atan(y/x))
+                      
+                      #PRIOR calculation from cartesian cordiantes to 2D Polar Coordinates 
                       #xy = xy -45.0
                       #xy = math.degrees(math.acos(((x*x) + (newX * newX) - (y*y)) / (2 * x * newX)))
                       
                        
                       #cv2.line(img, pts[i - 1], pts[i], (0, 0, 255), 3)
 
-                      # show the image coordinates
-                      #if(y<0):
-                        #xy = xy * -1 
+                      # Print the image coordinates on the bottom right corner of image. 
                       cv2.putText(img, "X: {}, Y: {}, OW: {}".format(x, y, z),
                         (10, img.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX,
                         0.35, (0, 0, 255), 1)
                       
+                      # Write values to text files to be read by ML model 
                       if(x > 9):
                         f = open("newX.txt", "w")
                         f.write('%f' % newX)
