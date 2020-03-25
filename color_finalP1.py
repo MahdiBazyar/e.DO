@@ -62,7 +62,7 @@ print(heightIn, widthIn) # Debug Statement
 count = 20    # Counter for frames 
 zCounter = 0  # Counter for calcuating depth average 
 zAvg = 0      # Average depth over a the set of frames
-total = 0	  # Total of the depth values of each frame
+total = 0     # Total of the depth values of each frame
 
 continuousCamera = False
 
@@ -258,9 +258,9 @@ while True:
                         f.close()
                 
           cv2.imshow("Detected Circle", img)     # Open new window to show video stream with circle detection 
-          #cv2.imshow('Filter_blue', res_blue)    # Open new window to show video stream that detects blue 
-          #cv2.imshow('Filter_green', res_green)  # Open new window to show video stream that detects green 
-          #cv2.imshow('Filter_red', res_red)      # Open new window to show video stream that detects red
+          cv2.imshow('Filter_blue', res_blue)    # Open new window to show video stream that detects blue 
+          cv2.imshow('Filter_green', res_green)  # Open new window to show video stream that detects green 
+          cv2.imshow('Filter_red', res_red)      # Open new window to show video stream that detects red
           
           k = cv2.waitKey(30) & 0xff
           if k == 27:
