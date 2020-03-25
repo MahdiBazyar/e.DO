@@ -5,6 +5,10 @@
 #  Directory:  /home/nvidia/jetson_ctrl_ws/src/edoProjectFinal
 #  Interface:  Arm Terminal
 #  Purpose:    Presents the user with various options to move e.DO
+#  Inputs:     2 Text files:
+#              results.txt
+#              color.txt
+#  Outputs:    None    
 # ==============================================================================================
 
 
