@@ -14,6 +14,7 @@
 
 # ============================ IMPORTS ============================
 from manipulation.manipulationWQueue import *
+import arm_config as conf
 from pynput import keyboard
 from termios import tcflush, TCIOFLUSH
 import time
@@ -21,16 +22,15 @@ import os
 import sys
 # ================================================================= [end imports]
 
-sys.path.append("/home/nvidia/jetson-reinforcement/build/aarch64")
+sys.path.append(conf.main_project_directory)
 
 # ===================================== FUNCTIONS =====================================
 
 # Function that gets a winning joint angle from Gazebo
 def get_joint_angles():
-    joint_file = "/home/nvidia/jetson-reinforcement/build/aarch64/bin/results.txt"
     joint_data = []
 
-    f = open(joint_file, "r")
+    f = open(conf.joint_angle_file, "r")
 
     for i in range(6):
       joint_data.append(int(f.readline()))
@@ -43,7 +43,7 @@ def get_joint_angles():
 def put_in_bucket():
     joint_data_bucket = []
     color = "" 
-    c = open("/home/nvidia/jetson-reinforcement/build/aarch64/bin/color.txt", "r")
+    c = open(conf.object_color_file, "r")
     color = c.read()
     print(color)
     
@@ -51,13 +51,13 @@ def put_in_bucket():
     # to work with our current setup in the lab.
     if (color == "blue"):
         print("Blue detected")
-        joint_data_bucket = [40, -55, -60, -80, -75, 95, 0.0, 0.0, 0.0, 0.0]
+        joint_data_bucket = conf.blue_bucket_angles
     if (color == "green"): 
         print("Green detected")
-        joint_data_bucket = [30, -70, -20, -20, -50, 20, 0.0, 0.0, 0.0, 0.0]
+        joint_data_bucket = conf.green_bucket_angles
     if (color == "red"):
         print("Red detected")
-        joint_data_bucket = [5, -70, -10, -25, -73, 20, 0.0, 0.0, 0.0, 0.0]
+        joint_data_bucket = conf.red_bucket_angles
 
     # Debug: Print angles gotten from text file
    
@@ -84,9 +84,9 @@ def move_arm():
     joint_data_vector = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]      # empty copy of joint_data that
                                                                                 # will contain intermediate moves
     
-    vector_number = 1   # More vectors should amount to smoother movement; must be an integer
-                        # Currently set to 1 until "fly" feature can be enabled to connect movements without pausing
-                        # Alternatively, 1000+ vectors and figure out how to speed up e.DO.
+    vector_number = conf.number_of_vectors   # More vectors should amount to smoother movement; must be an integer
+                                             # Currently set to 1 until "fly" feature can be enabled to connect movements without pausing
+                                             # Alternatively, use 1000+ vectors and figure out how to speed up e.DO.
                         
     for i in range (0, vector_number):  # Angles progressively build up to the joint_data values.
         for j in range (0, 10):
@@ -97,7 +97,8 @@ def move_arm():
                 joint_data_vector[j] += (joint_data[j] / float(vector_number))
     
         # Debug: Prints the value of each vector; they should build up to the original values in joint_data
-        print "Vector", i + 1, '\n', joint_data_vector, '\n'
+        if (conf.print_vector_data):
+            print "Vector", i + 1, '\n', joint_data_vector, '\n'
         
         # Moves each joint the new intermediate angle each iteration
         man.jointMove(joint_data_vector)
@@ -113,11 +114,11 @@ def move_arm():
     man.jointMove(joint_data)
     
     # Lift object
-    joint_data[1] = joint_data[1] - 15      # Raise joint 2 slightly
+    joint_data[1] = joint_data[1] - conf.lift_object      # Raise joint 2 slightly
     man.jointMove(joint_data)
     
     # Put object back down
-    joint_data[1] = joint_data[1] + 15      # Lower joint 2
+    joint_data[1] = joint_data[1] + conf.lift_object      # Lower joint 2
     man.jointMove(joint_data)
 
     # Release object and return to home position
@@ -203,12 +204,12 @@ if __name__ == '__main__':
     
     if(response == "0"):        # Exit arm terminal
         print("< Exiting... >\n")
-        time.sleep(0.25)
+        time.sleep(conf.system_message_sleep)
         exit(0)
       
     elif(response == "1"):      # Single grab attempt
       print("< Moving e.DO to object once... >\n")
-      time.sleep(0.25)
+      time.sleep(conf.system_message_sleep)
       move_arm()
       
     elif(response == "2"):      # Continuous grab attempts
@@ -235,10 +236,10 @@ if __name__ == '__main__':
                                                             # Otherwise, keep on dancin'...
                     if (updated_angles != current_angles):
                         break
-                    time.sleep(12)  # Wait 12 seconds to avoid building up a large queue of movements for e.DO
+                    time.sleep(conf.continuous_move_sleep)  # Wait n seconds to avoid building up a large queue of movements for e.DO
 
 
-             #   time.sleep(12)
+             #   time.sleep(conf.continuous_move_sleep)
                 move_arm()  # Move according to the angle updates in results.txt
                 current_angles = updated_angles # Reinitialize current_angles to execute dance loop again
 
@@ -250,13 +251,13 @@ if __name__ == '__main__':
                 
     elif(response == "3"):          # Single bucket
         print("< Moving e.DO to bucket once... >\n")
-        time.sleep(0.25)
+        time.sleep(conf.system_message_sleep)
         move_arm_bucket()
         
         
     elif(response == "4"):          # Continuous bucket
         print("< Continuously moving e.DO to bucket... >\n")    
-        time.sleep(0.25)
+        time.sleep(conf.system_message_sleep)
         
         # results.txt comparisons to determine if e.DO has won in the simulation
         current_angles = get_joint_angles()
@@ -278,9 +279,9 @@ if __name__ == '__main__':
                                                             # Otherwise, keep on dancin'...
                     if (updated_angles != current_angles):
                         break
-                    time.sleep(12)  # Wait 12 seconds to avoid building up a large queue of movements for e.DO
+                    time.sleep(conf.continuous_move_sleep)  # Wait n seconds to avoid building up a large queue of movements for e.DO
 
-             #   time.sleep(12)
+             #   time.sleep(conf.continuous_move_sleep)
                 move_arm_bucket()
                 current_angles = updated_angles # Reinitialize current_angles to execute dance loop again
 
@@ -301,10 +302,10 @@ if __name__ == '__main__':
         with keyboard.Listener(on_press = stop_key) as listener:
             while True:
                 man.dance()
-                time.sleep(10)   # Wait 10 seconds before executing next loop iteration
-                                    # to prevent building up large queue of dance moves
+                time.sleep(conf.dance_sleep)   # Wait n seconds before executing next loop iteration
+                                               # to prevent building up large queue of dance moves
                 
-                if (not listener.running):      # Stop e.DO, return to home position,
+                if (not listener.running):     # Stop e.DO, return to home position,
                     man.jointMove()
                     break
             
@@ -312,12 +313,12 @@ if __name__ == '__main__':
     elif(response == "6"):          # Home position
         print("< Returning e.DO to home position... >\n")
         man.jointMove()
-        time.sleep(0.25)
+        time.sleep(conf.system_message_sleep)
 
 
     elif(response == "b"):          # Hidden function to move only to bucket for testing angles
         print("< Moving to bucket... >\n")
-        time.sleep(0.25)
+        time.sleep(conf.system_message_sleep)
         
         joint_data_bucket = put_in_bucket()
         man.jointMove(joint_data_bucket)
@@ -329,11 +330,8 @@ if __name__ == '__main__':
 
     else:                           # Hmm....
         print("< This should never execute... >\n")
-        time.sleep(0.25)
+        time.sleep(conf.system_message_sleep)
 
 
             
 # ========================================================================================================== [end main]
-
-
- 
