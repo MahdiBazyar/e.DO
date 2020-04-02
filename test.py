@@ -14,13 +14,15 @@
 
 import time
 import math
-import random 
+import random
+import test_config as cfg 
 
 # Initial object position
-newX = 30   # Distance
-xy = -40    # Angle
-newZ = 6    # Height
+newX = cfg.x_min   # Distance
+xy = cfg.y_min     # Angle
+newZ = cfg.z_min   # Height
 
+# Writes object coordinates to text files to be read by Gazebo
 while True: 
   f = open("newX.txt", "w")
   print("Updated newX.txt") 
@@ -37,26 +39,28 @@ while True:
   f.write('%f' % newZ)
   f.close()
   
-  # ========== Old functionality which caused the object to move linearly ==========
-  #newX = newX + 1
-  #xy = xy + 1 
-  #newZ = newZ + 1
+  
+  time.sleep(cfg.update_interval)      # Sleeps for 1 hour (3600 seconds) to train
+                                       # e.DO at current object position
+                                       
+  # Moves the object linearly
+  if (cfg.mode == 1):
+      newX = newX + 1
+      xy = xy + 1 
+      newZ = newZ + 1
 
-  #if (newX == 75):     # Resets object distance once it gets out of range
-    #newX = 30
+      if (newX == cfg.x_max):     # Resets object distance once it gets out of range
+        newX = cfg.x_min
 
-  #if (xy == 40):       # Resets object angle once it gets out of range
-    #xy = -35
-    
-   #if (newZ == 75):    # Resets object height once it gets out of range
-        #newZ = 6
-  # ================================================================================
+      if (xy == cfg.y_max):       # Resets object angle once it gets out of range
+        xy = cfg.y_min
+        
+       if (newZ == cfg.z_max):    # Resets object height once it gets out of range
+            newZ = cfg.z_min
   
   # Randomizes object position within defined bounds
-  newX = random.randint(30, 75)
-  xy = random.randint(-40, 40)
-  newZ = random.randint(6, 75)
-
-  time.sleep(3600)      # Sleeps for 1 hour (3600 seconds) to train
-                        # e.DO at current object position
+  elif (cfg.mode == 2):
+      newX = random.randint(cfg.x_min, cfg.x_max)
+      xy = random.randint(cfg.y_min, cfg.y_max)
+      newZ = random.randint(cfg.z_min, cfg.z_max)
 
