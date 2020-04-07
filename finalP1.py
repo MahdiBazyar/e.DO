@@ -10,6 +10,8 @@ import sys
 
 #Adding file to Python PATH to callable elsewhere
 #sys.path.append(".")
+
+
 #class ObjectDetection():
 
   #def __init__(self):
@@ -18,25 +20,23 @@ import sys
 #def getObjectLocation():
 pts = deque(maxlen=32)
 cap = cv2.VideoCapture(1) #number is which camera on your system you want to use
-#Image Resolution 
-image_width = 800
-image_height = 600
-cap.set(3, image_width) #3 = Width
-cap.set(4, image_height) # 4 = Height 
+cap.set(3, 800)
+cap.set(4, 600)
 
 #Allow the camera or video file to warm up
 time.sleep(2.0)
 
 #Math logic to find the height and length
-depthOfCamera= 107 #Depth from camera to table in CM 
+depthOrAdjacent = 107
 
 verticalFieldOfView = 43.3
 verticalFieldOfViewHalf = verticalFieldOfView / 2
-baseOrOppositeVFOV = math.tan(math.radians(verticalFieldOfViewHalf)) * depthOfCamera
+baseOrOppositeVFOV = math.tan(math.radians(verticalFieldOfViewHalf)) * depthOrAdjacent
 
 horizontalFieldOfView = 70.42
 horizontalFieldOfViewHalf = horizontalFieldOfView / 2
-baseOrOppositeHFOV = math.tan(math.radians(horizontalFieldOfViewHalf)) * depthOfCamera
+baseOrOppositeHFOV = math.tan(math.radians(horizontalFieldOfViewHalf)) * depthOrAdjacent
+
   
 heightIn = baseOrOppositeVFOV * 2
 widthIn = baseOrOppositeHFOV * 2
@@ -63,18 +63,20 @@ while True:
         #cv2.destroyAllWindows()
         #break;
       #count = count - 1
-      ret, img = cap.read() #Takes one picture frame and stores in numpy array img
+      ret, img = cap.read()
       #start code here
       #Location of variable changed to fix results
       #Croping image
       #lefty, righty, leftx,rightx
       #img = img[100:-20,10:-210]
-      img = img[10:-10,10:-210] 
+      img = img[10:-10,10:-210]
 
-      height, width, _ = img.shape # returns a tuple of the number of rows, columns, and channels (if the image is color)
+      height, width, _ = img.shape
       inchesPerPixelH = heightIn / height #'''heightIn''' 
       inchesPerPixelW = widthIn / width	#'''widthIn'''
       #ends here
+      gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+      #
       # Convert to grayscale. 
       gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) 
     
@@ -84,25 +86,22 @@ while True:
       # Apply Hough transform on the blurred image. 
       detected_circles = cv2.HoughCircles(gray_blurred,  
                      	cv2.HOUGH_GRADIENT, 1, 20, param1 = 50, 
-                 	param2 = 30, minRadius = 1, maxRadius = 0) 
+                 	param2 = 30, minRadius = 1, maxRadius = 40) 
     
     # Draw circles that are detected. 
       if detected_circles is not None: 
     
       # Convert the circle parameters a, b and r to integers. 
-          detected_circles = np.uint16(np.around(detected_circles)) #Rounds to zero decimals
+          detected_circles = np.uint16(np.around(detected_circles)) 
     
           for pt in detected_circles[0, :]: 
-              #a & b = center_coordinates r = radius 
               a, b, r = pt[0], pt[1], pt[2] 
     
-              # Draw the circumference of the circle.
-              # DEFINITION: cv2.circle(image, center_coordinates, radius, color, thickness)
-              cv2.circle(img, (a, b), r, (203, 194, 244), 2) 
+              # Draw the circumference of the circle. 
+              cv2.circle(img, (a, b), r, (0, 255, 0), 2) 
     
               # Draw a small circle (of radius 1) to show the center. 
-              cv2.circle(img, (a, b), 1, (235, 244, 194), 3)
-
+              cv2.circle(img, (a, b), 1, (0, 0, 255), 3)
               pts.appendleft((a, b))
               #My code starts here.
               # loop over the set of tracked points
@@ -112,16 +111,19 @@ while True:
                   x = round(diff + (pts[0][0] * inchesPerPixelH), 2)
                   y = round(((heightIn/2) - (pts[0][1] * inchesPerPixelH) + 4.5), 2)
                   z = round((r * inchesPerPixelH) * 2, 2)
-                  newZ = z 
                   newX = round(math.sqrt((x*x) + (y*y)), 2)
                   xy = math.degrees(math.acos(((x*x) + (newX * newX) - (y*y)) / (2 * x * newX)))
+
+
+
+                   
                   #cv2.line(img, pts[i - 1], pts[i], (0, 0, 255), 3)
 
                   # show the image coordinates
                   if(y<0):
                     xy = xy * -1 
                   cv2.putText(img, "X: {}, Y: {}, OW: {}".format(x, y, z),
-                  	(10, img.shape[0] - 10), cv2.FONT_HERSHEY_S 32IMPLEX,
+                  	(10, img.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX,
                   	0.35, (0, 0, 255), 1)
                   
                   if(x > 9):
@@ -131,15 +133,15 @@ while True:
                     f = open("xy.txt", "w")
                     f.write('%f' % xy)
                     f.close()
-                    f = open("newZ.txt", "w")
-                    f.write('%f' % newZ)
-                    f.close()
-      #DEFINITION: cv2.imshow(window_name, image)
+		    #My code ends here 
       cv2.imshow("Detected Circle", img)
       #cv2.imshow("blurred", gray_blurred)
       #cv2.imshow("gray", gray)
-      key = cv2.waitKey(30) & 0xff 
-      if key == 27:
+      k = cv2.waitKey(30) & 0xff
+      if k == 27:
+
            cap.release()
+
+
      # close all windows
            cv2.destroyAllWindows()
