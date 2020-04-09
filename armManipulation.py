@@ -13,13 +13,14 @@
 
 
 # ============================ IMPORTS ============================
-from manipulation.manipulationWQueue import *
-import arm_config as cfg
+import os
+import sys
 from pynput import keyboard
 from termios import tcflush, TCIOFLUSH
 import time
-import os
-import sys
+sys.path.append('/home/nvidia/jetson-reinforcement/build/aarch64/config/')
+import config_load as cfg
+from manipulation.manipulationWQueue import *
 # ================================================================= [end imports]
 
 sys.path.append(cfg.main_project_directory)
