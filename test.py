@@ -15,7 +15,9 @@
 import time
 import math
 import random
-import test_config as cfg 
+import sys
+sys.path.append('/home/nvidia/jetson-reinforcement/build/aarch64/config/')
+import config_load as cfg
 
 # Initial object position
 newX = cfg.x_min   # Distance
