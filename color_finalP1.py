@@ -25,9 +25,11 @@ import imutils # Series of convenience functions to make OpenCV functions easier
 import time # Time library 
 import math # Math library 
 import sys # System library 
+sys.path.append('/home/nvidia/jetson-reinforcement/build/aarch64/config/') # Configuration file path
+import config_load as cfg # Loads external configuration file
 import os # Operating Systems Interface library 
-import cam_config as cfg # External configuration file
 # =========== Standard Imports and Necessary Packages ===========
+
 
 # Create double ended queue 
 pts = deque(maxlen = 32)
