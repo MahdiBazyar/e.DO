@@ -1,0 +1,121 @@
+{
+    "color_finalP1": {
+        "camera_initialization": {
+			"init_capture_source": 1,
+			"init_capture_width": 800,
+			"init_capture_height": 600,
+			"init_warmup_time": 2.0
+		},
+		"camera_measurements": {
+			"meas_surface_to_cam_cm": 107,
+			"meas_cam_v_fov_cm": 43.3,
+			"meas_cam_h_fov_cm": 70.42
+		},
+		"frames": {
+			"frames_num_to_capture": 20
+		},
+		"image_crop": {
+			"crop_row_start": 10,
+			"crop_row_end": -10,
+			"crop_col_start": 10,
+			"crop_col_end": -210
+		},
+		"hsv_bounds": {
+			"hsv_blue_lower_hue": 94,
+			"hsv_blue_lower_saturation": 80,
+			"hsv_blue_lower_value": 2,
+			"hsv_blue_upper_hue": 126,
+			"hsv_blue_upper_saturation": 255,
+			"hsv_blue_upper_value": 255,
+
+			"hsv_green_lower_hue": 25,
+			"hsv_green_lower_saturation": 52,
+			"hsv_green_lower_value": 72,
+			"hsv_green_upper_hue": 102,
+			"hsv_green_upper_saturation": 255,
+			"hsv_green_upper_value": 255,
+
+			"hsv_red_lower_hue": 0,
+			"hsv_red_lower_saturation": 100,
+			"hsv_red_lower_value": 100,
+			"hsv_red_upper_hue": 10,
+			"hsv_red_upper_saturation": 255,
+			"hsv_red_upper_value": 255,
+
+			"hsv_red_lower_hue_2": 160,
+			"hsv_red_lower_saturation_2": 100,
+			"hsv_red_lower_value_2": 100,
+			"hsv_red_upper_hue_2": 179,
+			"hsv_red_upper_saturation_2": 255,
+			"hsv_red_upper_value_2": 255
+		},
+		"blur": {
+			"blur_kernel_size": 3
+		},
+		"circle_detection_parameters": {
+			"cdparam_inverse_resolution_ratio": 0.1,
+			"cdparam_center_min_distance": 20,
+			"cdparam_edge_upper_threshold": 40,
+			"cdparam_center_threshold": 23,
+			"cdparam_min_radius": 6,
+			"cdparam_max_radius": 60
+		},
+		"circle_bgr": {
+			"cbgr_circle_blue": 0,
+			"cbgr_circle_green": 255,
+			"cbgr_circle_red": 0,
+			
+			"cbgr_center_blue": 0,
+			"cbgr_center_green": 0,
+			"cbgr_center_red": 255
+		},
+		"math": {
+			"math_distance_buffer": 7.25,
+			"math_angle_buffer": 4.5,
+			"math_object_size_cm": 4,
+			"math_default_surface_depth": 6,
+			"math_min_object_distance": 9
+		}
+    },
+    "armManipulation": {
+		"directories": {
+			"dir_main": "/home/nvidia/jetson-reinforcement/build/aarch64",
+			"dir_joint_angles": "/home/nvidia/jetson-reinforcement/build/aarch64/bin/results.txt",
+			"dir_obj_color": "/home/nvidia/jetson-reinforcement/build/aarch64/bin/color.txt"
+		},
+        "bucket_angles": {
+			"angles_blue": [40.0, -55.0, -60.0, -80.0, -75.0, 95.0, 0.0, 0.0, 0.0, 0.0],
+			"angles_green": [30.0, -70.0, -20.0, -20.0, -50.0, 20.0, 0.0, 0.0, 0.0, 0.0],
+			"angles_red": [5.0, -70.0, -10.0, -25.0, -73.0, 20.0, 0.0, 0.0, 0.0, 0.0]
+			},
+        "vectors": {
+			"vec_number": 1,
+			"vec_print_data": true
+			},
+        "object_lift": {
+			"obj_lift": 15.0
+			},
+        "sleep_timers": {
+            "sleep_sys_msg": 0.25,
+            "sleep_cont_move": 12.0,
+            "sleep_dance": 10.0
+        }
+
+    },
+    "test": {
+        "object_boundaries": {
+			"bound_x_min": 30,
+			"bound_x_max": 75,			
+			"bound_y_min": -40,
+			"bound_y_max": 40,			
+			"bound_z_min": 6,
+			"bound_z_max": 75
+			},
+        "repositioning_method": {
+			"rmethod_mode": 2
+			},
+        "repositioning_time": {
+			"rtime_update_interval": 3600
+			}
+    }
+}
