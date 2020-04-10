@@ -8,11 +8,27 @@
 #              single shot of n frames or run the camera continuously. The images 
 #              will then be processed to output the color and location of the object.
 #  Inputs:     Camera connection
-#  Outputs:    4 Text Files
-#              Color.txt (The color of the object- red, blue, or green) 
-#              newX.txt  (The distance of object from base of e.DO in cm) 
-#              xy.txt    (The angle that the object is in relation to e.DO in degrees) 
-#              newZ.txt  (The depth of the object in cm) 
+#  Outputs:    16 Text Files - 4 Text Files Per Quadrant 
+#              Quadrant 1: 
+#              Color1.txt (The color of the object- red, blue, or green) 
+#              newX1.txt  (The distance of object from base of e.DO in cm) 
+#              xy1.txt    (The angle that the object is in relation to e.DO in degrees) 
+#              newZ1.txt  (The depth of the object in cm)
+#              Quadrant 2: 
+#              color2.txt (The color of the object- red, blue, or green) 
+#              newX2.txt  (The distance of object from base of e.DO in cm) 
+#              xy2.txt    (The angle that the object is in relation to e.DO in degrees) 
+#              newZ2.txt  (The depth of the object in cm)
+#              Quadrant 3: 
+#              color3.txt (The color of the object- red, blue, or green) 
+#              newX3.txt  (The distance of object from base of e.DO in cm) 
+#              xy3.txt    (The angle that the object is in relation to e.DO in degrees) 
+#              newZ3.txt  (The depth of the object in cm)
+#              Quadrant 4: 
+#              color4.txt (The color of the object- red, blue, or green) 
+#              newX4.txt  (The distance of object from base of e.DO in cm) 
+#              xy4.txt    (The angle that the object is in relation to e.DO in degrees) 
+#              newZ4.txt  (The depth of the object in cm)
 # ================================== Camera File! ==================================
 
 
