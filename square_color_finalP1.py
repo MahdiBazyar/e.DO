@@ -147,7 +147,7 @@ while True:
           contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
           
-# ================== Detects Simple Squares/Rectancles =================
+# ================== Detects Simple Squares/Rectancles   Kristina Stevoff ================= 
           for c in contours:
            x,y,w,h = cv2.boundingRect(c)
           cv2.rectangle(img, (x,y), (x+w, y+h), (0, 255, 0), 2)
